@@ -1,0 +1,62 @@
+default_agent: test_us1_sensei_calculatoragent
+agents:
+  test_us1_sensei_calculatoragent:
+    name: test_us1_sensei_calculatoragent
+    language: python
+    node_version: '20'
+    entrypoint: my_agent1.py
+    deployment_type: container
+    runtime_type: null
+    platform: linux/arm64
+    container_runtime: none
+    source_path: C:\Users\Public\Nikhil\agentcore-react
+    aws:
+      execution_role: arn:aws:iam::831974769837:role/test-us1-sensei-agent-role
+      execution_role_auto_create: true
+      account: '831974769837'
+      region: us-east-1
+      ecr_repository: 831974769837.dkr.ecr.us-east-1.amazonaws.com/bedrock-agentcore-test-us1-sensei-calculatoragent
+      ecr_auto_create: true
+      s3_path: null
+      s3_auto_create: false
+      network_configuration:
+        network_mode: PUBLIC
+        network_mode_config: null
+      protocol_configuration:
+        server_protocol: HTTP
+      observability:
+        enabled: true
+      lifecycle_configuration:
+        idle_runtime_session_timeout: null
+        max_lifetime: null
+    bedrock_agentcore:
+      agent_id: test_us1_sensei_calculatoragent-FVeAERG4BI
+      agent_arn: arn:aws:bedrock-agentcore:us-east-1:831974769837:runtime/test_us1_sensei_calculatoragent-FVeAERG4BI
+      agent_session_id: null
+    codebuild:
+      project_name: bedrock-agentcore-test_us1_sensei_calculatoragent-builder
+      execution_role: arn:aws:iam::831974769837:role/AmazonBedrockAgentCoreSDKCodeBuild-us-east-1-3cbacde639
+      source_bucket: bedrock-agentcore-codebuild-sources-831974769837-us-east-1
+    memory:
+      mode: STM_ONLY
+      memory_id: test_us1_sensei_calculatoragent_mem-wYvlbqE6gh
+      memory_arn: arn:aws:bedrock-agentcore:us-east-1:831974769837:memory/test_us1_sensei_calculatoragent_mem-wYvlbqE6gh
+      memory_name: test_us1_sensei_calculatoragent_mem
+      event_expiry_days: 30
+      first_invoke_memory_check_done: true
+      was_created_by_toolkit: true
+    identity:
+      credential_providers: []
+      workload: null
+    aws_jwt:
+      enabled: false
+      audiences: []
+      signing_algorithm: ES384
+      issuer_url: null
+      duration_seconds: 300
+    authorizer_configuration: null
+    request_header_configuration: null
+    oauth_configuration: null
+    api_key_env_var_name: null
+    api_key_credential_provider_name: null
+    is_generated_by_agentcore_create: false

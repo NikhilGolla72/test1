@@ -1,0 +1,219 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Sensei websocket backend with calculator and analyzer lambdas
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 60
+    MemorySize: 512
+    Architectures:
+    - x86_64
+Parameters:
+  StageName:
+    Type: String
+    Default: prod
+  AgentCoreRuntimeId:
+    Type: String
+    Default: my_agent1-EuvQcG3t0u
+  AgentCoreRuntimeArn:
+    Type: String
+    Default: arn:aws:bedrock-agentcore:us-east-1:636052469006:runtime/my_agent1-EuvQcG3t0u
+  RuntimeLogGroup:
+    Type: String
+    Default: /aws/bedrock-agentcore/runtimes/my_agent1-EuvQcG3t0u-DEFAULT
+  RuntimeLogStream:
+    Type: String
+    Default: agent-traces
+  EvaluatorLogGroup:
+    Type: String
+    Default: /aws/bedrock-agentcore/evaluations/results/evaluation_quick_start_1773400924069-RMD3JBHdQM
+  AnalyzerAuditLogGroup:
+    Type: String
+    Default: /aws/sensei/analyzer-websocket
+  AnalyzerAuditLogStream:
+    Type: String
+    Default: analyser-websocket
+  AnalyzerModelId:
+    Type: String
+    Default: arn:aws:bedrock:us-east-1:636052469006:inference-profile/global.anthropic.claude-sonnet-4-6
+  DefaultAnalysisLookbackHours:
+    Type: Number
+    Default: 720
+Resources:
+  SenseiWebSocketApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: SenseiWebSocketApi
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: $request.body.action
+  SenseiWebSocketStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId:
+        Ref: SenseiWebSocketApi
+      StageName:
+        Ref: StageName
+      AutoDeploy: true
+  CalculatorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://test-us1-sensei-sam-artifacts-831974769837/c8c7088a6e556fcb6272cb3473fd7486
+      Handler: app.lambda_handler
+      Environment:
+        Variables:
+          AGENTCORE_RUNTIME_ID:
+            Ref: AgentCoreRuntimeId
+          AGENTCORE_RUNTIME_ARN:
+            Ref: AgentCoreRuntimeArn
+      Policies:
+      - Statement:
+        - Effect: Allow
+          Action:
+          - execute-api:ManageConnections
+          Resource:
+            Fn::Sub: arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SenseiWebSocketApi}/*
+        - Effect: Allow
+          Action:
+          - bedrock-agentcore-runtime:InvokeAgentRuntime
+          - bedrock-agentcore:InvokeAgentRuntime
+          Resource:
+          - Ref: AgentCoreRuntimeArn
+          - Fn::Sub: ${AgentCoreRuntimeArn}/runtime-endpoint/*
+    Metadata:
+      SamResourceId: CalculatorFunction
+  AnalyzerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://test-us1-sensei-sam-artifacts-831974769837/bd76654c29e5cb3ba6ec6eb2c34e7470
+      Handler: app.lambda_handler
+      Timeout: 45
+      MemorySize: 1024
+      Environment:
+        Variables:
+          RUNTIME_LOG_GROUP:
+            Ref: RuntimeLogGroup
+          RUNTIME_LOG_STREAM:
+            Ref: RuntimeLogStream
+          EVALUATOR_LOG_GROUP:
+            Ref: EvaluatorLogGroup
+          ANALYZER_MODEL_ID:
+            Ref: AnalyzerModelId
+          DEFAULT_ANALYSIS_LOOKBACK_HOURS:
+            Ref: DefaultAnalysisLookbackHours
+          ANALYZER_REQUEST_BUDGET_SECONDS: 40
+          ANALYZER_AUDIT_LOG_GROUP:
+            Ref: AnalyzerAuditLogGroup
+          ANALYZER_AUDIT_LOG_STREAM:
+            Ref: AnalyzerAuditLogStream
+      Policies:
+      - Statement:
+        - Effect: Allow
+          Action:
+          - execute-api:ManageConnections
+          Resource:
+            Fn::Sub: arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SenseiWebSocketApi}/*
+        - Effect: Allow
+          Action:
+          - logs:StartQuery
+          - logs:GetQueryResults
+          - logs:GetLogEvents
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          - logs:PutLogEvents
+          Resource: '*'
+        - Effect: Allow
+          Action:
+          - xray:BatchGetTraces
+          Resource: '*'
+        - Effect: Allow
+          Action:
+          - bedrock:InvokeModel
+          - bedrock:Converse
+          - bedrock:InvokeModelWithResponseStream
+          Resource: '*'
+    Metadata:
+      SamResourceId: AnalyzerFunction
+  CalculatorIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: SenseiWebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+        - CalculatorFunction
+        - Arn
+  AnalyzerIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: SenseiWebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::GetAtt:
+        - AnalyzerFunction
+        - Arn
+  ConnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: SenseiWebSocketApi
+      RouteKey: $connect
+      Target:
+        Fn::Sub: integrations/${CalculatorIntegration}
+  DisconnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: SenseiWebSocketApi
+      RouteKey: $disconnect
+      Target:
+        Fn::Sub: integrations/${CalculatorIntegration}
+  DefaultRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: SenseiWebSocketApi
+      RouteKey: $default
+      Target:
+        Fn::Sub: integrations/${CalculatorIntegration}
+  CalculatorRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: SenseiWebSocketApi
+      RouteKey: calculator
+      Target:
+        Fn::Sub: integrations/${CalculatorIntegration}
+  AnalyzerRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: SenseiWebSocketApi
+      RouteKey: analyzer
+      Target:
+        Fn::Sub: integrations/${AnalyzerIntegration}
+  CalculatorPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Ref: CalculatorFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+  AnalyzerPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Ref: AnalyzerFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+Outputs:
+  WebSocketApiUrl:
+    Value:
+      Fn::Sub: wss://${SenseiWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}
+  CalculatorLambdaName:
+    Value:
+      Ref: CalculatorFunction
+  AnalyzerLambdaName:
+    Value:
+      Ref: AnalyzerFunction

@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["execute-api:ManageConnections"],
+      "Resource": "arn:aws:execute-api:us-east-1:831974769837:dvgkvotq4h/dev/*",
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["logs:StartQuery","logs:GetQueryResults","logs:GetLogEvents","logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"],
+      "Resource": "*",
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["xray:BatchGetTraces"],
+      "Resource": "*",
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["bedrock:InvokeModel","bedrock:Converse","bedrock:InvokeModelWithResponseStream"],
+      "Resource": "*",
+      "Effect": "Allow"
+    }
+  ]
+}

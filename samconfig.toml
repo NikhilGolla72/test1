@@ -1,0 +1,14 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "test-us1-sensei-backend"
+resolve_s3 = true
+s3_prefix = "test-us1-sensei-backend"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "StageName=\"dev\" AgentCoreRuntimeId=\"test-us1-sensei-calculatoragent\" AgentCoreRuntimeArn=\"arn:aws:bedrock-agentcore:us-east-1:831974769837:runtime/test_us1_sensei_calculatoragent-FVeAERG4BI\" RuntimeLogGroup=\"/aws/bedrock-agentcore/runtimes/test-us1-sensei-calculatoragent-DEFAULT\" RuntimeLogStream=\"agent-traces\" EvaluatorLogGroup=\"/aws/bedrock-agentcore/evaluations/results/test-us1-sensei-evaluator\" AnalyzerModelId=\"arn:aws:bedrock:us-east-1:831974769837:inference-profile/global.anthropic.claude-sonnet-4-6\" DefaultAnalysisLookbackHours=\"720\""
+image_repositories = []
+
+[default.global.parameters]
+region = "us-east-1"

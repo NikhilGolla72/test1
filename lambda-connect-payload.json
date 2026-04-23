@@ -1,0 +1,9 @@
+{
+  "requestContext": {
+    "routeKey": "$connect",
+    "domainName": "dvgkvotq4h.execute-api.us-east-1.amazonaws.com",
+    "stage": "dev",
+    "connectionId": "smoke-conn"
+  },
+  "body": ""
+}

@@ -1,0 +1,157 @@
+﻿{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ECRImageAccess",
+      "Effect": "Allow",
+      "Action": ["ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer"],
+      "Resource": ["arn:aws:ecr:us-east-1:831974769837:repository/bedrock-agentcore-my_agent1"]
+    },
+    {
+      "Sid": "ECRTokenAccess",
+      "Effect": "Allow",
+      "Action": ["ecr:GetAuthorizationToken"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "RuntimeLogsDescribeAndCreateGroup",
+      "Effect": "Allow",
+      "Action": ["logs:DescribeLogStreams", "logs:DescribeLogGroups", "logs:CreateLogGroup"],
+      "Resource": [
+        "arn:aws:logs:us-east-1:831974769837:log-group:/aws/bedrock-agentcore/runtimes/*",
+        "arn:aws:logs:us-east-1:831974769837:log-group:*"
+      ]
+    },
+    {
+      "Sid": "RuntimeLogsWrite",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": ["arn:aws:logs:us-east-1:831974769837:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*"]
+    },
+    {
+      "Sid": "CloudWatchMetrics",
+      "Effect": "Allow",
+      "Action": ["cloudwatch:PutMetricData"],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "cloudwatch:namespace": "bedrock-agentcore"
+        }
+      }
+    },
+    {
+      "Sid": "XRayWrite",
+      "Effect": "Allow",
+      "Action": ["xray:PutTraceSegments", "xray:PutTelemetryRecords", "xray:GetSamplingRules", "xray:GetSamplingTargets"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "LogsDelivery",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogGroup", "logs:PutDeliverySource", "logs:PutDeliveryDestination", "logs:CreateDelivery", "logs:GetDeliverySource", "logs:DeleteDeliverySource", "logs:DeleteDeliveryDestination"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "BedrockAgentCoreIdentityGetResourceApiKey",
+      "Effect": "Allow",
+      "Action": ["bedrock-agentcore:GetResourceApiKey"],
+      "Resource": [
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:token-vault/default",
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:token-vault/default/apikeycredentialprovider/*",
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:workload-identity-directory/default",
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:workload-identity-directory/default/workload-identity/*"
+      ]
+    },
+    {
+      "Sid": "BedrockAgentCoreIdentityGetCredentialProviderClientSecret",
+      "Effect": "Allow",
+      "Action": ["secretsmanager:GetSecretValue"],
+      "Resource": [
+        "arn:aws:secretsmanager:us-east-1:831974769837:secret:bedrock-agentcore-identity!default/oauth2/*",
+        "arn:aws:secretsmanager:us-east-1:831974769837:secret:bedrock-agentcore-identity!default/apikey/*"
+      ]
+    },
+    {
+      "Sid": "BedrockAgentCoreIdentityGetResourceOauth2Token",
+      "Effect": "Allow",
+      "Action": ["bedrock-agentcore:GetResourceOauth2Token"],
+      "Resource": [
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:token-vault/default",
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:token-vault/default/oauth2credentialprovider/*",
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:workload-identity-directory/default",
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:workload-identity-directory/default/workload-identity/test_us1_sensei_calculatoragent-*"
+      ]
+    },
+    {
+      "Sid": "BedrockModelInvocation",
+      "Effect": "Allow",
+      "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:Converse", "bedrock:ConverseStream", "bedrock:ApplyGuardrail"],
+      "Resource": [
+        "arn:aws:bedrock:*::foundation-model/*",
+        "arn:aws:bedrock:*:*:inference-profile/*",
+        "arn:aws:bedrock:us-east-1:831974769837:*"
+      ]
+    },
+    {
+      "Sid": "MarketplaceSubscribeOnFirstCall",
+      "Effect": "Allow",
+      "Action": ["aws-marketplace:ViewSubscriptions", "aws-marketplace:Subscribe"],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:CalledViaLast": "bedrock.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "BedrockAgentCoreCodeInterpreter",
+      "Effect": "Allow",
+      "Action": ["bedrock-agentcore:StartCodeInterpreterSession", "bedrock-agentcore:InvokeCodeInterpreter", "bedrock-agentcore:StopCodeInterpreterSession", "bedrock-agentcore:GetCodeInterpreter", "bedrock-agentcore:GetCodeInterpreterSession", "bedrock-agentcore:ListCodeInterpreterSessions"],
+      "Resource": ["arn:aws:bedrock-agentcore:us-east-1:aws:code-interpreter/aws.codeinterpreter.v1"]
+    },
+    {
+      "Sid": "BedrockAgentCoreIdentity",
+      "Effect": "Allow",
+      "Action": ["bedrock-agentcore:CreateWorkloadIdentity", "bedrock-agentcore:GetWorkloadAccessTokenForUserId"],
+      "Resource": [
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:workload-identity-directory/default",
+        "arn:aws:bedrock-agentcore:us-east-1:831974769837:workload-identity-directory/default/workload-identity/*"
+      ]
+    },
+    {
+      "Sid": "AwsJwtFederation",
+      "Effect": "Allow",
+      "Action": ["sts:GetWebIdentityToken"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "PriceCatalogPrimaryBucket",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::test-us1-sensei-price-catalog/pricing/catalog.json"]
+    },
+    {
+      "Sid": "PriceCatalogPrimaryBucketList",
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::test-us1-sensei-price-catalog"],
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": ["pricing/*"]
+        }
+      }
+    },
+    {
+      "Sid": "PriceCatalogSecondaryBucket",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::agentcore-machine-prices-831974769837/machine_prices.json"]
+    },
+    {
+      "Sid": "PriceCatalogSecondaryBucketList",
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::agentcore-machine-prices-831974769837"]
+    }
+  ]
+}

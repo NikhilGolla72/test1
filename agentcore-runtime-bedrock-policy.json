@@ -1,0 +1,20 @@
+﻿{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowBedrockInvokeCurrentAccountProfiles",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream",
+        "bedrock:Converse",
+        "bedrock:ConverseStream",
+        "bedrock:ApplyGuardrail"
+      ],
+      "Resource": [
+        "arn:aws:bedrock:us-east-1:831974769837:inference-profile/*",
+        "arn:aws:bedrock:*::foundation-model/*"
+      ]
+    }
+  ]
+}

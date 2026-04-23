@@ -1,0 +1,12 @@
+/* App Styles */
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Router outlet */
+main {
+  width: 100%;
+  min-height: 100vh;
+}

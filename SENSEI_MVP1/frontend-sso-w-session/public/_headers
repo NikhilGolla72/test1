@@ -1,0 +1,6 @@
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://c92kmsf2ag.execute-api.us-east-1.amazonaws.com https://qgnrk2fx2g.execute-api.us-east-1.amazonaws.com https://ist9zxx88l.execute-api.us-east-1.amazonaws.com https://us-east-1dn95gfiev.auth.us-east-1.amazoncognito.com https://pricing-data-upload-bucket-us-east-1.s3.amazonaws.com wss://y2ufxhga9h.execute-api.us-east-1.amazonaws.com; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()

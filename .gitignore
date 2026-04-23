@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+terraform/
+# Build artifacts
+.aws-sam/
+*.tsbuildinfo
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+terraform.tfstate*
+terraform.tfvars
+
+# Additional build and cache files
+dist/
+build/
+.cache/
+*.tmp
+*.swp
+*.swo
+.tools/
+terraform/.terraform/
+*.exe
+*.zip
+*.tfstate
+*.tfstate.backup

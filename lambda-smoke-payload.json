@@ -1,0 +1,9 @@
+{
+  "requestContext": {
+    "routeKey": "calculator",
+    "domainName": "example.execute-api.us-east-1.amazonaws.com",
+    "stage": "dev",
+    "connectionId": "local-test"
+  },
+  "body": "{\"action\":\"calculator\",\"prompt\":\"What is 2 + 2?\",\"requestId\":\"smoke-1\",\"sessionId\":\"smoke-session\"}"
+}
